@@ -7,7 +7,7 @@
 get_immodata(city_vector)
 }
 \arguments{
-\item{city_vector}{a vector containing the name of the different cities}
+\item{city_vector}{: a vector containing the name of the different cities}
 }
 \value{
 A dataframe containing the number of rooms, m2, price, address, post code

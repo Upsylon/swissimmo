@@ -1,7 +1,7 @@
 #'@title Websrcapping of Immoscout24.ch data by city
 #'@description This function enables to collect the data about the location market
 #'from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
-#'@param city_vector a vector containing the name of the different cities
+#'@param city_vector : a vector containing the name of the different cities
 #'@return A dataframe containing the number of rooms, m2, price, address, post code
 #'and city of the different accomodations available.
 #'@author Germano David
@@ -9,6 +9,7 @@
 #'@author Bron Luca
 #'@author Raisin Edgar
 #'@author Grandadam Patrik
+#'@importFrom magrittr %>%
 #'@export
 #'@examples
 #'get_immodata(c("lugano", "lausanne))
@@ -33,13 +34,13 @@ get_immodata <- function(city_vector) {
   ### Getting the number of pages for each cities
   pages <- list()
   for( i in 1:length(cities)){
-    pages[[i]] <- read_html(x = paste0(unlist(attributes(cities[[i]]),
+    pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
                                               use.names = FALSE))) %>%
-      html_nodes(css = ".cXTlXt") %>%
-      html_text() %>%
+      rvest::html_nodes(css = ".cXTlXt") %>%
+      rvest::html_text() %>%
       as.numeric() %>%
       max(na.rm = TRUE) %>%
-      subtract(e2 = 1) %>%
+      magrittr::subtract(e2 = 1) %>%
       seq(from = 1)
   }
 
@@ -53,9 +54,9 @@ get_immodata <- function(city_vector) {
         paste("?pn=", page, sep="")
 
       cities[[i]][[page]] <- list()
-      cities[[i]][[page]] <- read_html(url_path_page_immoscout) %>%
-        html_nodes(".csgoYM") %>%
-        html_text()
+      cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
+        rvest::html_nodes(".csgoYM") %>%
+        rvest::html_text()
     }
   }
 
@@ -71,27 +72,27 @@ get_immodata <- function(city_vector) {
 
     assign(paste("df_", names(cities[i]), sep=""),
            data.frame(
-             rooms = str_extract(item_full_info, ".*m\u00B2") %>%
+             rooms = stringr::str_extract(item_full_info, ".*m\u00B2") %>%
                # first taking before m2 for the cases where the word "room" or "rooms"
                # is mentionned in the description
-               str_extract(., ".*rooms*") %>%
+               stringr::str_extract(., ".*rooms*") %>%
                gsub(pattern = " rooms", replacement = "", fixed = TRUE) %>%
                gsub(pattern = " room", replacement = "", fixed = TRUE) %>%
                as.numeric
              ,
 
              # Extract Size
-             m2 = str_extract(item_full_info, ".*m\u00B2\u00AB") %>%
-               str_extract(., ", .*") %>%
+             m2 = stringr::str_extract(item_full_info, ".*m\u00B2\u00AB") %>%
+               stringr::str_extract(., ", .*") %>%
                gsub(pattern=" m\u00B2\u00AB", replacement = "", fixed = TRUE) %>%
                gsub(pattern= ", ", replacement = "", fixed = TRUE)
              %>% as.integer
              ,
 
              # Extract localiation
-             address =  str_extract(item_full_info, ".*Close") %>%
-               str_extract(., ".*,") %>%
-               str_extract(., "\u00bb.*") %>%
+             address =  stringr::str_extract(item_full_info, ".*Close") %>%
+               stringr::str_extract(., ".*,") %>%
+               stringr::str_extract(., "\u00bb.*") %>%
                gsub(pattern = "Close", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ",", replacement = "", fixed = TRUE) %>%
                gsub(pattern = "\u00bb", replacement = "", fixed = TRUE) %>%
@@ -106,7 +107,7 @@ get_immodata <- function(city_vector) {
              ,
 
              #extract price
-             price = str_extract(item_full_info, "eCHF .*") %>% str_extract(., ".*.\u2014 *") %>%
+             price = stringr::str_extract(item_full_info, "eCHF .*") %>% stringr::str_extract(., ".*.\u2014 *") %>%
                gsub(pattern = "eCHF ", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ".\u2014", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ",", replacement = "", fixed = TRUE) %>% as.integer
@@ -118,25 +119,25 @@ get_immodata <- function(city_vector) {
     )
 
     city <-  data.frame(
-      rooms = str_extract(item_full_info, ".*\u00AB") %>%
+      rooms = stringr::str_extract(item_full_info, ".*\u00AB") %>%
         # first taking before m2 for the cases where the word "room" or "rooms"
         # is mentionned in the description
-        str_extract(., ".*room") %>%
+        stringr::str_extract(., ".*room") %>%
         gsub(pattern = " room", replacement = "", fixed = TRUE) %>%
         as.numeric
       ,
 
       # Extract Size
-      m2 = str_extract(item_full_info, ".*m\u00B2\u00AB") %>%
-        # str_extract(., ", .*") %>%
+      m2 = stringr::str_extract(item_full_info, ".*m\u00B2\u00AB") %>%
+        # stringr::str_extract(., ", .*") %>%
         gsub(pattern=" m\u00B2\u00AB", replacement = "", fixed = TRUE) %>%
-        word(.,-1) %>%
+        stringr::word(.,-1) %>%
         as.integer
       ,
 
       #extract price
-      price = str_extract(item_full_info, "eCHF .*") %>%
-        str_extract(., ".*.\u2014 *") %>%
+      price = stringr::str_extract(item_full_info, "eCHF .*") %>%
+        stringr::str_extract(., ".*.\u2014 *") %>%
         gsub(pattern = "eCHF ", replacement = "", fixed = TRUE) %>%
         gsub(pattern = ".\u2014", replacement = "", fixed = TRUE) %>%
         gsub(pattern = ",", replacement = "", fixed = TRUE) %>%
@@ -144,9 +145,9 @@ get_immodata <- function(city_vector) {
       ,
 
       # Extract localiation
-      address =  str_extract(item_full_info, ".*Close") %>%
-        str_extract(., ".*,") %>%
-        str_extract(., "\u00bb.*") %>%
+      address =  stringr::str_extract(item_full_info, ".*Close") %>%
+        stringr::str_extract(., ".*,") %>%
+        stringr::str_extract(., "\u00bb.*") %>%
         gsub(pattern = "Close", replacement = "", fixed = TRUE) %>%
         gsub(pattern = ",", replacement = "", fixed = TRUE) %>%
         gsub(pattern = "\u00bb", replacement = "", fixed = TRUE) %>%
@@ -164,23 +165,23 @@ get_immodata <- function(city_vector) {
         gsub(pattern = "\u00E2", replacement = "a", fixed = TRUE)
       ,
 
-      postcode = str_extract(item_full_info, ".*Close") %>%
-        str_extract(., ".*,") %>%
-        str_extract(., "\u00bb.*") %>%
+      postcode = stringr::str_extract(item_full_info, ".*Close") %>%
+        stringr::str_extract(., ".*,") %>%
+        stringr::str_extract(., "\u00bb.*") %>%
         gsub(pattern = "Close", replacement = "", fixed = TRUE) %>%
         gsub(pattern = ",", replacement = "", fixed = TRUE) %>%
         gsub(pattern = "\u00bb", replacement = "", fixed = TRUE)  %>%
-        word(., -2),
+        stringr::word(., -2),
 
-      city = str_extract(item_full_info, ".*Close") %>%
-        str_extract(., ".*,") %>%
-        str_extract(., "\u00bb.*") %>%
+      city = stringr::str_extract(item_full_info, ".*Close") %>%
+        stringr::str_extract(., ".*,") %>%
+        stringr::str_extract(., "\u00bb.*") %>%
         gsub(pattern = "Close", replacement = "", fixed = TRUE) %>%
         gsub(pattern = ",", replacement = "", fixed = TRUE) %>%
         gsub(pattern = "\u00bb", replacement = "", fixed = TRUE) %>%
         gsub(pattern = "\u00FC", replacement = "u", fixed = TRUE) %>%
         gsub(pattern = "\u00E8", replacement = "e", fixed = TRUE) %>%
-        word(., -1)
+        stringr::word(., -1)
     )
     all_cities <- rbind(all_cities, city)
   }
