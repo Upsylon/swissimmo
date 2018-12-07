@@ -16,7 +16,6 @@ Description: This package is used to webscrap and analyse data from immoscout.24
 License: MIT
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
 Imports:
     shiny (>= 1.2.0),
     ggplot2,
@@ -30,4 +29,6 @@ Imports:
     ggmap,
     googleway,
     leaflet
+RoxygenNote: 6.1.1
+
 
