@@ -195,3 +195,180 @@ get_immodata <- function(city_vector) {
 
   return(all_cities)
 }
+
+
+
+#'@title Create a new "pred" object
+#'@description This function enables to predict the prices of housings based on
+#'their number of rooms, size in square meters, city and using a particular model.
+#'The user can provide either a dataframe in the form of the ones outputted by the
+#'get_immodata or providing only rooms, m2 and city of a single housing
+#'@param housings A dataframe in the form of the ones outputted by the get_immodata
+#'function.
+#'@param rooms The number of rooms for a single housing estimation
+#'@param m2 The number of m2 for a single housing estimation
+#'@param city The city of a single housing estimation
+#'@param model A model supported by the caret function for regression ("gam", "rf",
+#'"nnet", "svmRadialCost", "rpart", ...)
+#'@return A "pred" object of the expected prices of all observations of the
+#'dataframe or the single housing
+#'@author Germano David
+#'@author Lomazzi Vincent
+#'@author Bron Luca
+#'@author Raisin Edgar
+#'@author Grandadam Patrik
+#'@importFrom magrittr %>%
+#'@export
+#'@examples
+#'cities <- get_immodata(c("bussigny", "nyon"))
+#'predict_price(cities) # based on a dataframe
+#'predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
+
+predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
+
+  set.seed(seed)
+
+  if (missing(housings) && (missing(rooms) || missing(m2) || missing(city))){
+    message("Please enter an appropriate dataframe or complete informations")
+  } else if (missing(housings) && !missing(rooms) && !missing(m2) && !missing(city)) {
+    message("The output is the estimated price for an unique housing")
+  } else if (
+    !missing(housings) && (!missing(rooms) || !missing(m2) || !missing(city))
+  ) {
+    message("The output will be calculated based only on the dataframe")
+  }
+
+  if (!missing(housings)) {
+
+    model_used <- caret::train(form = price ~ rooms + m2 + city,
+                        data = housings,
+                        method = model)
+
+    predictions <- predict(model_used)
+
+    df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
+
+    rval <- list(
+      df_predict = df_predict,
+      points = data.frame(
+        predictions = predictions,
+        real_price = housings$price %>% as.double)
+    )
+
+    class(rval) <- "pred"
+
+    return(rval)
+  }
+
+  if (missing(housings) && !missing(rooms) && !missing(m2) && !missing(city)) {
+
+    housings <- get_immodata(city)
+
+    model_used <- caret::train(form = price ~ rooms + m2,
+                        data = housings,
+                        method = model)
+    predictions <- predict(model_used, newdata = city)
+    return(paste("The predicted price for this housing is",
+                 round(predictions, 0),
+                 "CHF."
+    )
+    )
+  }
+}
+
+#'@title Extracting the prices of a "pred" object
+#'@description This function enables to extract the prices of a "pred" object
+#'and to add a new column of the expected prices to the original dataframe.
+#'@param pred_object An objet of class "pred", which was a dataframe inputted
+#'in the predict_price function.
+#'@return A dataframe with a new column of estimated prices.
+#'@author Germano David
+#'@author Lomazzi Vincent
+#'@author Bron Luca
+#'@author Raisin Edgar
+#'@author Grandadam Patrik
+#'@details One has to be careful using this function as the model to obtain the
+#'predicted values has been built on the same dataset in which it forecasts the
+#'price. Overfitting is clearly present and may alter the predictions.
+#'@export
+#'@examples
+#'cities <- get_immodata(c("bussigny", "nyon"))
+#'predict_price(city = "nyon", rooms = 3, m2 = 59)
+#'predictions <- predict_price(cities)
+#'summary(predictions)
+
+summary.pred <- function(pred_object) {
+
+  x = pred_object[["df_predict"]]
+
+  return(x)
+}
+
+#'@title Plot a "pred" object
+#'@description This function enables to plot a "pred" object and to retrieve
+#'the estimated values compared to the real prices on the market.
+#'@param pred_object An objet of class "pred", which was a dataframe inputted
+#'in the predict_price function.
+#'@return A plot of the estimated prices against the real prices.
+#'@author Germano David
+#'@author Lomazzi Vincent
+#'@author Bron Luca
+#'@author Raisin Edgar
+#'@author Grandadam Patrik
+#'@details One has to be careful using this function as the model to obtain the
+#'predicted values has been built on the same dataset in which it forecasts the
+#'price. Overfitting is clearly present and may alter the predictions.
+#'@export
+#'@examples
+#'cities <- get_immodata(c("bussigny", "nyon"))
+#'predictions <- predict_price(cities)
+#'plot(predictions)
+
+plot.pred <- function(pred_object) {
+
+x = pred_object[["points"]]["predictions"]
+y = pred_object[["points"]]["real_price"]
+
+print(ggplot2::ggplot() +
+        ggplot2::geom_point(ggplot2::aes(x = x$predictions, y = y$real_price)) +
+        my_theme() +
+        ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
+        ggplot2::xlab("Predicted values of the testing set") +
+        ggplot2::ylab("Real value of the testing set")  )
+}
+
+#'@title Nice theme for ggplot graphs
+#'@description This function enables to add a beautiful theme to ggplot graphs
+#'@param base_size The base size, no need to change it.
+#'@param base_family The base_family, no need to change it
+#'@author Germano David
+#'@author Lomazzi Vincent
+#'@author Bron Luca
+#'@author Raisin Edgar
+#'@author Grandadam Patrik
+#'@export
+my_theme <- function(base_size = 10, base_family = "sans") {
+  ggplot2::theme_minimal(base_size = base_size, base_family = base_family) +
+    ggplot2::theme(
+      axis.text = ggplot2::element_text(size = 10),
+      axis.text.x = ggplot2::element_text(vjust = 0.5, hjust = 0.5),
+      axis.title = ggplot2::element_text(size = 12),
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      panel.grid.major = ggplot2::element_line(color = "grey"),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.background = ggplot2::element_rect(fill = "aliceblue"),
+      strip.background = ggplot2::element_rect(fill = "lightgrey",
+                                      color = "grey", size = 1),
+      strip.text = ggplot2::element_text(face = "bold", size = 10, color = "black"),
+      legend.position = "bottom",
+      legend.justification = "top",
+      legend.box = "horizontal",
+      legend.box.background = ggplot2::element_rect(colour = "grey50"),
+      legend.background = ggplot2::element_blank(),
+      panel.border = ggplot2::element_rect(color = "grey", fill = NA, size = 0.5)
+    )
+}
+
+
+
+
