@@ -342,25 +342,25 @@ summary.pred <- function(pred_object) {
 
 plot.pred <- function(pred_object) {
 
-  ui <- fluidPage(
-    fluidRow(
-      column(width = 8,
-             plotOutput("plot1", height = 300,
+  ui <- shiny::fluidPage(
+    shiny::fluidRow(
+      shiny::column(width = 8,
+                    shiny::plotOutput("plot1", height = 300,
                         click = "plot1_click",
-                        brush = brushOpts(
+                        brush = shiny::brushOpts(
                           id = "plot1_brush"
                         )
              )
       )
     ),
-    fluidRow(
-      column(width = 12,
-             h4("Clicked point"),
-             verbatimTextOutput("click_info")
+    shiny::fluidRow(
+      shiny::column(width = 12,
+                    shiny::h4("Clicked point"),
+                    shiny::verbatimTextOutput("click_info")
       ),
-      column(width = 12,
-             h4("Brushed points"),
-             verbatimTextOutput("brush_info")
+      shiny::column(width = 12,
+                    shiny::h4("Brushed points"),
+                    shiny:: verbatimTextOutput("brush_info")
       )
     )
   )
@@ -369,16 +369,17 @@ plot.pred <- function(pred_object) {
 
     toplot <- summary(pred_object)
 
-    output$plot1 <- renderPlot({
-      ggplot(toplot, aes(price, predicted_price)) + geom_point() +
-        my_theme() +
+    output$plot1 <- shiny::renderPlot({
+      ggplot2::ggplot(toplot, aes(price, predicted_price)) +
+        ggplot2::geom_point() +
         ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
         ggplot2::xlab("Predicted values of the testing set") +
-        ggplot2::ylab("Real value of the testing set")
+        ggplot2::ylab("Real value of the testing set") +
+        my_theme()
     })
 
-    output$click_info <- renderPrint({
-      nearPoints(toplot, input$plot1_click)
+    output$click_info <- shiny::renderPrint({
+      shiny::nearPoints(toplot, input$plot1_click)
     })
 
     output$brush_info <- renderPrint({
@@ -386,7 +387,7 @@ plot.pred <- function(pred_object) {
     })
   }
 
-  return(shinyApp(ui, server))
+  return(shiny::shinyApp(ui, server))
 
 }
 
