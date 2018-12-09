@@ -1,7 +1,7 @@
 #'@title Websrcapping of Immoscout24.ch data by city
 #'@description This function enables to collect the data about the location market
 #'from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
-#'@param city_vector : a vector containing the name of the different cities
+#'@param city_vector A vector containing the name of the different cities
 #'@return A dataframe containing the number of rooms, m2, price, address, post code
 #'and city of the different accomodations available.
 #'@author Germano David
@@ -35,7 +35,7 @@ get_immodata <- function(city_vector) {
   pages <- list()
   for( i in 1:length(cities)){
     pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
-                                              use.names = FALSE))) %>%
+                                                    use.names = FALSE))) %>%
       rvest::html_nodes(css = ".cXTlXt") %>%
       rvest::html_text() %>%
       as.numeric() %>%
@@ -210,6 +210,7 @@ get_immodata <- function(city_vector) {
 #'@param city The city of a single housing estimation
 #'@param model A model supported by the caret function for regression ("gam", "rf",
 #'"nnet", "svmRadialCost", "rpart", ...)
+#'@param seed The seed to use
 #'@return A "pred" object of the expected prices of all observations of the
 #'dataframe or the single housing
 #'@author Germano David
@@ -240,13 +241,27 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
 
   if (!missing(housings)) {
 
-    model_used <- caret::train(form = price ~ rooms + m2 + city,
-                        data = housings,
-                        method = model)
+    if (length(levels(cities$city)) >= 2){
 
-    predictions <- predict(model_used)
+      model_used <- caret::train(form = price ~ rooms + m2 + city,
+                                 data = housings,
+                                 method = model)
 
-    df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
+      predictions <- predict(model_used)
+
+      df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
+    }
+
+    else if (length(levels(cities$city)) < 2){
+      model_used <- caret::train(form = price ~ rooms + m2,
+                                 data = housings,
+                                 method = model)
+
+      predictions <- predict(model_used)
+
+      df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
+    }
+
 
     rval <- list(
       df_predict = df_predict,
@@ -265,8 +280,8 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
     housings <- get_immodata(city)
 
     model_used <- caret::train(form = price ~ rooms + m2,
-                        data = housings,
-                        method = model)
+                               data = housings,
+                               method = model)
     predictions <- predict(model_used, newdata = city)
     return(paste("The predicted price for this housing is",
                  round(predictions, 0),
@@ -326,15 +341,15 @@ summary.pred <- function(pred_object) {
 
 plot.pred <- function(pred_object) {
 
-x = pred_object[["points"]]["predictions"]
-y = pred_object[["points"]]["real_price"]
+  x = pred_object[["points"]]["predictions"]
+  y = pred_object[["points"]]["real_price"]
 
-print(ggplot2::ggplot() +
-        ggplot2::geom_point(ggplot2::aes(x = x$predictions, y = y$real_price)) +
-        my_theme() +
-        ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
-        ggplot2::xlab("Predicted values of the testing set") +
-        ggplot2::ylab("Real value of the testing set")  )
+  print(ggplot2::ggplot() +
+          ggplot2::geom_point(ggplot2::aes(x = x$predictions, y = y$real_price)) +
+          my_theme() +
+          ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
+          ggplot2::xlab("Predicted values of the testing set") +
+          ggplot2::ylab("Real value of the testing set")  )
 }
 
 #'@title Nice theme for ggplot graphs
@@ -358,7 +373,7 @@ my_theme <- function(base_size = 10, base_family = "sans") {
       panel.grid.minor = ggplot2::element_blank(),
       panel.background = ggplot2::element_rect(fill = "aliceblue"),
       strip.background = ggplot2::element_rect(fill = "lightgrey",
-                                      color = "grey", size = 1),
+                                               color = "grey", size = 1),
       strip.text = ggplot2::element_text(face = "bold", size = 10, color = "black"),
       legend.position = "bottom",
       legend.justification = "top",
