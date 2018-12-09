@@ -225,7 +225,7 @@ get_immodata <- function(city_vector) {
 #'predict_price(cities) # based on a dataframe
 #'predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
 
-predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
+predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
 
   set.seed(seed)
 
@@ -319,9 +319,11 @@ summary.pred <- function(pred_object) {
   return(x)
 }
 
-#'@title Plot a "pred" object
+#'@title Interactive plot of a "pred" object
 #'@description This function enables to plot a "pred" object and to retrieve
-#'the estimated values compared to the real prices on the market.
+#'the estimated values compared to the real prices on the market. Thanks to a
+#'shiny app, it is possible to retrieve the characteristic of the "points" by
+#'clicking on them or selecting multiple at the same time.
 #'@param pred_object An objet of class "pred", which was a dataframe inputted
 #'in the predict_price function.
 #'@return A plot of the estimated prices against the real prices.
@@ -341,15 +343,52 @@ summary.pred <- function(pred_object) {
 
 plot.pred <- function(pred_object) {
 
-  x = pred_object[["points"]]["predictions"]
-  y = pred_object[["points"]]["real_price"]
+  ui <- fluidPage(
+    fluidRow(
+      column(width = 8,
+             plotOutput("plot1", height = 300,
+                        click = "plot1_click",
+                        brush = brushOpts(
+                          id = "plot1_brush"
+                        )
+             )
+      )
+    ),
+    fluidRow(
+      column(width = 12,
+             h4("Clicked point"),
+             verbatimTextOutput("click_info")
+      ),
+      column(width = 12,
+             h4("Brushed points"),
+             verbatimTextOutput("brush_info")
+      )
+    )
+  )
 
-  print(ggplot2::ggplot() +
-          ggplot2::geom_point(ggplot2::aes(x = x$predictions, y = y$real_price)) +
-          my_theme() +
-          ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
-          ggplot2::xlab("Predicted values of the testing set") +
-          ggplot2::ylab("Real value of the testing set")  )
+  server <- function(input, output) {
+
+    toplot <- summary(pred_object)
+
+    output$plot1 <- renderPlot({
+      ggplot(toplot, aes(price, predicted_price)) + geom_point() +
+        my_theme() +
+        ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
+        ggplot2::xlab("Predicted values of the testing set") +
+        ggplot2::ylab("Real value of the testing set")
+    })
+
+    output$click_info <- renderPrint({
+      nearPoints(toplot, input$plot1_click)
+    })
+
+    output$brush_info <- renderPrint({
+      brushedPoints(toplot, input$plot1_brush)
+    })
+  }
+
+  return(shinyApp(ui, server))
+
 }
 
 #'@title Nice theme for ggplot graphs

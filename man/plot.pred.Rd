@@ -2,7 +2,7 @@
 % Please edit documentation in R/immodata.R
 \name{plot.pred}
 \alias{plot.pred}
-\title{Plot a "pred" object}
+\title{Interactive plot of a "pred" object}
 \usage{
 \method{plot}{pred}(pred_object)
 }
@@ -15,7 +15,9 @@ A plot of the estimated prices against the real prices.
 }
 \description{
 This function enables to plot a "pred" object and to retrieve
-the estimated values compared to the real prices on the market.
+the estimated values compared to the real prices on the market. Thanks to a
+shiny app, it is possible to retrieve the characteristic of the "points" by
+clicking on them or selecting multiple at the same time.
 }
 \details{
 One has to be careful using this function as the model to obtain the
