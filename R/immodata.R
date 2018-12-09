@@ -12,7 +12,7 @@
 #'@importFrom magrittr %>%
 #'@export
 #'@examples
-#'get_immodata(c("lugano", "lausanne))
+#'get_immodata(c("lugano", "lausanne"))
 
 get_immodata <- function(city_vector) {
 
@@ -308,7 +308,6 @@ predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
 #'@export
 #'@examples
 #'cities <- get_immodata(c("bussigny", "nyon"))
-#'predict_price(city = "nyon", rooms = 3, m2 = 59)
 #'predictions <- predict_price(cities)
 #'summary(predictions)
 

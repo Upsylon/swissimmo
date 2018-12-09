@@ -17,6 +17,9 @@ and city of the different accomodations available.
 This function enables to collect the data about the location market
 from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
 }
+\examples{
+get_immodata(c("lugano", "lausanne"))
+}
 \author{
 Germano David
 

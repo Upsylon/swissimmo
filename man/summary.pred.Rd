@@ -24,7 +24,6 @@ price. Overfitting is clearly present and may alter the predictions.
 }
 \examples{
 cities <- get_immodata(c("bussigny", "nyon"))
-predict_price(city = "nyon", rooms = 3, m2 = 59)
 predictions <- predict_price(cities)
 summary(predictions)
 }
