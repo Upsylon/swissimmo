@@ -1,18 +1,18 @@
-#'@title Websrcapping of Immoscout24.ch data by city
-#'@description This function enables to collect the data about the location market
-#'from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
-#'@param city_vector A vector containing the name of the different cities
-#'@return A dataframe containing the number of rooms, m2, price, address, post code
-#'and city of the different accomodations available.
-#'@author Germano David
-#'@author Lomazzi Vincent
-#'@author Bron Luca
-#'@author Raisin Edgar
-#'@author Grandadam Patrik
-#'@importFrom magrittr %>%
-#'@export
-#'@examples
-#'get_immodata(c("lugano", "lausanne"))
+#' @title Websrcapping of Immoscout24.ch data by city
+#' @description This function enables to collect the data about the location market
+#' from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
+#' @param city_vector A vector containing the name of the different cities
+#' @return A dataframe containing the number of rooms, m2, price, address, post code
+#' and city of the different accomodations available.
+#' @author Germano David
+#' @author Lomazzi Vincent
+#' @author Bron Luca
+#' @author Raisin Edgar
+#' @author Grandadam Patrik
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#'  get_immodata(c("lugano", "lausanne"))
 
 get_immodata <- function(city_vector) {
 
@@ -198,32 +198,32 @@ get_immodata <- function(city_vector) {
 
 
 
-#'@title Create a new "pred" object
-#'@description This function enables to predict the prices of housings based on
-#'their number of rooms, size in square meters, city and using a particular model.
-#'The user can provide either a dataframe in the form of the ones outputted by the
-#'get_immodata or providing only rooms, m2 and city of a single housing
-#'@param housings A dataframe in the form of the ones outputted by the get_immodata
-#'function.
-#'@param rooms The number of rooms for a single housing estimation
-#'@param m2 The number of m2 for a single housing estimation
-#'@param city The city of a single housing estimation
-#'@param model A model supported by the caret function for regression ("gam", "rf",
-#'"nnet", "svmRadialCost", "rpart", ...)
-#'@param seed The seed to use
-#'@return A "pred" object of the expected prices of all observations of the
-#'dataframe or the single housing
-#'@author Germano David
-#'@author Lomazzi Vincent
-#'@author Bron Luca
-#'@author Raisin Edgar
-#'@author Grandadam Patrik
-#'@importFrom magrittr %>%
-#'@export
-#'@examples
-#'cities <- get_immodata(c("bussigny", "nyon"))
-#'predict_price(cities) # based on a dataframe
-#'predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
+#' @title Create a new "pred" object
+#' @description This function enables to predict the prices of housings based on
+#' their number of rooms, size in square meters, city and using a particular model.
+#' The user can provide either a dataframe in the form of the ones outputted by the
+#' get_immodata or providing only rooms, m2 and city of a single housing
+#' @param housings A dataframe in the form of the ones outputted by the get_immodata
+#' function.
+#' @param rooms The number of rooms for a single housing estimation
+#' @param m2 The number of m2 for a single housing estimation
+#' @param city The city of a single housing estimation
+#' @param model A model supported by the caret function for regression ("gam", "rf",
+#' "nnet", "svmRadialCost", "rpart", ...)
+#' @param seed The seed to use
+#' @return A "pred" object of the expected prices of all observations of the
+#' dataframe or the single housing
+#' @author Germano David
+#' @author Lomazzi Vincent
+#' @author Bron Luca
+#' @author Raisin Edgar
+#' @author Grandadam Patrik
+#' @importFrom magrittr %>%
+#' @export
+#' @examples
+#' cities <- get_immodata(c("bussigny", "nyon"))
+#' predict_price(cities) # based on a dataframe
+#' predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
 
 predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
 
@@ -291,25 +291,25 @@ predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
   }
 }
 
-#'@title Extracting the prices of a "pred" object
-#'@description This function enables to extract the prices of a "pred" object
-#'and to add a new column of the expected prices to the original dataframe.
-#'@param pred_object An objet of class "pred", which was a dataframe inputted
-#'in the predict_price function.
-#'@return A dataframe with a new column of estimated prices.
-#'@author Germano David
-#'@author Lomazzi Vincent
-#'@author Bron Luca
-#'@author Raisin Edgar
-#'@author Grandadam Patrik
-#'@details One has to be careful using this function as the model to obtain the
-#'predicted values has been built on the same dataset in which it forecasts the
-#'price. Overfitting is clearly present and may alter the predictions.
-#'@export
-#'@examples
-#'cities <- get_immodata(c("bussigny", "nyon"))
-#'predictions <- predict_price(cities)
-#'summary(predictions)
+#' @title Extracting the prices of a "pred" object
+#' @description This function enables to extract the prices of a "pred" object
+#' and to add a new column of the expected prices to the original dataframe.
+#' @param pred_object An objet of class "pred", which was a dataframe inputted
+#' in the predict_price function.
+#' @return A dataframe with a new column of estimated prices.
+#' @author Germano David
+#' @author Lomazzi Vincent
+#' @author Bron Luca
+#' @author Raisin Edgar
+#' @author Grandadam Patrik
+#' @details One has to be careful using this function as the model to obtain the
+#' predicted values has been built on the same dataset in which it forecasts the
+#' price. Overfitting is clearly present and may alter the predictions.
+#' @export
+#' @examples
+#' cities <- get_immodata(c("bussigny", "nyon"))
+#' predictions <- predict_price(cities)
+#' summary(predictions)
 
 summary.pred <- function(pred_object) {
 
@@ -318,27 +318,27 @@ summary.pred <- function(pred_object) {
   return(x)
 }
 
-#'@title Interactive plot of a "pred" object
-#'@description This function enables to plot a "pred" object and to retrieve
-#'the estimated values compared to the real prices on the market. Thanks to a
-#'shiny app, it is possible to retrieve the characteristic of the "points" by
-#'clicking on them or selecting multiple at the same time.
-#'@param pred_object An objet of class "pred", which was a dataframe inputted
-#'in the predict_price function.
-#'@return A plot of the estimated prices against the real prices.
-#'@author Germano David
-#'@author Lomazzi Vincent
-#'@author Bron Luca
-#'@author Raisin Edgar
-#'@author Grandadam Patrik
-#'@details One has to be careful using this function as the model to obtain the
-#'predicted values has been built on the same dataset in which it forecasts the
-#'price. Overfitting is clearly present and may alter the predictions.
-#'@export
-#'@examples
-#'cities <- get_immodata(c("bussigny", "nyon"))
-#'predictions <- predict_price(cities)
-#'plot(predictions)
+#' @title Interactive plot of a "pred" object
+#' @description This function enables to plot a "pred" object and to retrieve
+#' the estimated values compared to the real prices on the market. Thanks to a
+#' shiny app, it is possible to retrieve the characteristic of the "points" by
+#' clicking on them or selecting multiple at the same time.
+#' @param pred_object An objet of class "pred", which was a dataframe inputted
+#' in the predict_price function.
+#' @return A plot of the estimated prices against the real prices.
+#' @author Germano David
+#' @author Lomazzi Vincent
+#' @author Bron Luca
+#' @author Raisin Edgar
+#' @author Grandadam Patrik
+#' @details One has to be careful using this function as the model to obtain the
+#' predicted values has been built on the same dataset in which it forecasts the
+#' price. Overfitting is clearly present and may alter the predictions.
+#' @export
+#' @examples
+#' cities <- get_immodata(c("bussigny", "nyon"))
+#' predictions <- predict_price(cities)
+#' plot(predictions)
 
 plot.pred <- function(pred_object) {
 
@@ -391,16 +391,16 @@ plot.pred <- function(pred_object) {
 
 }
 
-#'@title Nice theme for ggplot graphs
-#'@description This function enables to add a beautiful theme to ggplot graphs
-#'@param base_size The base size, no need to change it.
-#'@param base_family The base_family, no need to change it
-#'@author Germano David
-#'@author Lomazzi Vincent
-#'@author Bron Luca
-#'@author Raisin Edgar
-#'@author Grandadam Patrik
-#'@export
+#' @title Nice theme for ggplot graphs
+#' @description This function enables to add a beautiful theme to ggplot graphs
+#' @param base_size The base size, no need to change it.
+#' @param base_family The base_family, no need to change it
+#' @author Germano David
+#' @author Lomazzi Vincent
+#' @author Bron Luca
+#' @author Raisin Edgar
+#' @author Grandadam Patrik
+#' @export
 my_theme <- function(base_size = 10, base_family = "sans") {
   ggplot2::theme_minimal(base_size = base_size, base_family = base_family) +
     ggplot2::theme(
