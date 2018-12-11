@@ -29,7 +29,7 @@ get_immodata <- function(city_vector) {
   for (i in 1:length(cities)){
     attr(cities[[i]], which = "url") <- paste(
       "https://www.immoscout24.ch/en/real-estate/rent/city-",
-      names(cities[i]), sep="")
+      names(cities[i]), sep = "")
   }
 
   ### Getting the number of pages for each cities
@@ -37,11 +37,10 @@ get_immodata <- function(city_vector) {
   for( i in 1:length(cities)){
     pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
                                                     use.names = FALSE))) %>%
-      rvest::html_nodes(css = ".cXTlXt") %>%
+      rvest::html_nodes(css = ".fsjvuy") %>% # the csv corresponding to pages
       rvest::html_text() %>%
       as.numeric() %>%
       max(na.rm = TRUE) %>%
-      magrittr::subtract(e2 = 1) %>%
       seq(from = 1)
   }
 
@@ -56,7 +55,7 @@ get_immodata <- function(city_vector) {
 
       cities[[i]][[page]] <- list()
       cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
-        rvest::html_nodes(".csgoYM") %>%
+        rvest::html_nodes(".dTICXP") %>% # the csv corresponding to the big block
         rvest::html_text()
     }
   }
@@ -238,11 +237,10 @@ get_immodata2 <- function(city_vector) {
   for( i in 1:length(cities)){
     pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
                                                     use.names = FALSE))) %>%
-      rvest::html_nodes(css = ".cXTlXt") %>%
+      rvest::html_nodes(css = ".fsjvuy") %>%
       rvest::html_text() %>%
       as.numeric() %>%
       max(na.rm = TRUE) %>%
-      magrittr::subtract(e2 = 1) %>%
       seq(from = 1)
   }
 
@@ -257,7 +255,7 @@ get_immodata2 <- function(city_vector) {
 
       cities[[i]][[page]] <- list()
       cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
-        rvest::html_nodes(".csgoYM") %>%
+        rvest::html_nodes(".dTICXP") %>%
         rvest::html_text()
     }
   }
@@ -460,7 +458,10 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
                                  data = housings,
                                  method = model)
 
-      predictions <- predict(model_used)
+      predictions <- predict(model_used) %>%
+        round(digits = 0) %>%
+        unlist %>%
+        as.numeric()
 
       df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
     }
@@ -470,18 +471,16 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
                                  data = housings,
                                  method = model)
 
-      predictions <- predict(model_used)
+      predictions <- predict(model_used) %>%
+        round(digits = 0) %>%
+        unlist %>%
+        as.numeric()
 
       df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
     }
 
 
-    rval <- list(
-      df_predict = df_predict,
-      points = data.frame(
-        predictions = predictions,
-        real_price = housings$price %>% as.double)
-    )
+    rval <- df_predict
 
     class(rval) <- "pred"
 
@@ -495,7 +494,10 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
     model_used <- caret::train(form = price ~ rooms + m2,
                                data = housings,
                                method = model)
-    predictions <- predict(model_used, newdata = city)
+    predictions <- predict(model_used, newdata = city) %>%
+      round(digits = 0) %>%
+      unlist %>%
+      as.numeric()
     return(paste("The predicted price for this housing is",
                  round(predictions, 0),
                  "CHF."
@@ -526,7 +528,7 @@ predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
 
 summary.pred <- function(pred_object) {
 
-  x = pred_object[["df_predict"]]
+  x = do.call(cbind.data.frame, pred_object)
 
   return(x)
 }
