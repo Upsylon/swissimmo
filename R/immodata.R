@@ -241,7 +241,7 @@ predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
 
   if (!missing(housings)) {
 
-    if (length(levels(cities$city)) >= 2){
+    if (length(levels(housings$city)) >= 2){
 
       model_used <- caret::train(form = price ~ rooms + m2 + city,
                                  data = housings,
@@ -252,7 +252,7 @@ predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
       df_predict <- housings %>% dplyr::mutate(predicted_price = predictions)
     }
 
-    else if (length(levels(cities$city)) < 2){
+    else if (length(levels(housings$city)) < 2){
       model_used <- caret::train(form = price ~ rooms + m2,
                                  data = housings,
                                  method = model)
