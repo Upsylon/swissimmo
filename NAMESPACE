@@ -3,6 +3,7 @@
 S3method(plot,pred)
 S3method(summary,pred)
 export(get_immodata)
+export(get_immodata2)
 export(my_theme)
 export(predict_price)
 importFrom(magrittr,"%>%")

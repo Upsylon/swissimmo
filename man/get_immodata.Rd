@@ -10,7 +10,7 @@ get_immodata(city_vector)
 \item{city_vector}{A vector containing the name of the different cities}
 }
 \value{
-A dataframe containing the number of rooms, m2, price, address, post code
+A dataframe containing the number of rooms, m2, price, address,
 and city of the different accomodations available.
 }
 \description{
@@ -18,7 +18,7 @@ This function enables to collect the data about the location market
 from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
 }
 \examples{
- get_immodata(c("lugano", "lausanne"))
+get_immodata(c("lugano", "lausanne"))
 }
 \author{
 Germano David
