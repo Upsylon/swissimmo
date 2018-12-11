@@ -434,7 +434,7 @@ get_immodata2 <- function(city_vector) {
 #' predict_price(cities) # based on a dataframe
 #' predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
 
-predict_price <- function(housings, rooms, m2, city, model = "gam", seed = 1) {
+predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
 
   set.seed(seed)
 

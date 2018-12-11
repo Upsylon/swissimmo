@@ -4,7 +4,7 @@
 \alias{predict_price}
 \title{Create a new "pred" object}
 \usage{
-predict_price(housings, rooms, m2, city, model = "gam", seed = 1)
+predict_price(housings, rooms, m2, city, model = "rf", seed = 1)
 }
 \arguments{
 \item{housings}{A dataframe in the form of the ones outputted by the get_immodata
