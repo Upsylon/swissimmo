@@ -11,7 +11,8 @@ get_immodata(city_vector)
 }
 \value{
 A dataframe containing the number of rooms, m2, price, address,
-and city of the different accomodations available.
+and city of the different accomodations available. Ignores housings with prices
+less than 300 and higher than 10000 and containing missing data.
 }
 \description{
 This function enables to collect the data about the location market

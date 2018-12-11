@@ -3,7 +3,8 @@
 #' from Immoscout24.ch. For given cities, on can retrieve the housings available for renting.
 #' @param city_vector A vector containing the name of the different cities
 #' @return A dataframe containing the number of rooms, m2, price, address,
-#' and city of the different accomodations available.
+#' and city of the different accomodations available. Ignores housings with prices
+#' less than 300 and higher than 10000 and containing missing data.
 #' @author Germano David
 #' @author Lomazzi Vincent
 #' @author Bron Luca
@@ -26,7 +27,7 @@ get_immodata <- function(city_vector) {
 
   ### Getting the URL of each cities in new variables linked to each of them:
   for (i in 1:length(cities)){
-    attr(cities[[i]], which="url") <- paste(
+    attr(cities[[i]], which = "url") <- paste(
       "https://www.immoscout24.ch/en/real-estate/rent/city-",
       names(cities[i]), sep="")
   }
@@ -51,7 +52,7 @@ get_immodata <- function(city_vector) {
         attributes %>%
         unlist(use.names = FALSE) %>%
         paste0 %>%
-        paste("?pn=", page, sep="")
+        paste("?pn=", page, sep = "")
 
       cities[[i]][[page]] <- list()
       cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
@@ -70,7 +71,7 @@ get_immodata <- function(city_vector) {
     #extract number of rooms
 
 
-    assign(paste("df_", names(cities[i]), sep=""),
+    assign(paste("df_", names(cities[i]), sep = ""),
            data.frame(
              rooms = stringr::str_extract(item_full_info, ".*m\u00B2") %>%
                # first taking before m2 for the cases where the word "room" or "rooms"
@@ -107,7 +108,8 @@ get_immodata <- function(city_vector) {
              ,
 
              #extract price
-             price = stringr::str_extract(item_full_info, "eCHF .*") %>% stringr::str_extract(., ".*.\u2014 *") %>%
+             price = stringr::str_extract(item_full_info, "eCHF .*") %>%
+               stringr::str_extract(., ".*.\u2014 *") %>%
                gsub(pattern = "eCHF ", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ".\u2014", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ",", replacement = "", fixed = TRUE) %>% as.integer
@@ -202,7 +204,8 @@ get_immodata <- function(city_vector) {
 #' @param city_vector A vector containing the name of the different cities
 #' @return A dataframe containing the number of rooms, m2, price, address,
 #' city, longitude and latitude of the different accomodations available and their
-#' estimated price.
+#' estimated price. Ignores housings with prices less than 300 and higher than 10000
+#' and containing missing data.
 #' @author Germano David
 #' @author Lomazzi Vincent
 #' @author Bron Luca
@@ -250,7 +253,7 @@ get_immodata2 <- function(city_vector) {
         attributes %>%
         unlist(use.names = FALSE) %>%
         paste0 %>%
-        paste("?pn=", page, sep="")
+        paste("?pn=", page, sep = "")
 
       cities[[i]][[page]] <- list()
       cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
@@ -306,7 +309,8 @@ get_immodata2 <- function(city_vector) {
              ,
 
              #extract price
-             price = stringr::str_extract(item_full_info, "eCHF .*") %>% stringr::str_extract(., ".*.\u2014 *") %>%
+             price = stringr::str_extract(item_full_info, "eCHF .*") %>%
+               stringr::str_extract(., ".*.\u2014 *") %>%
                gsub(pattern = "eCHF ", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ".\u2014", replacement = "", fixed = TRUE) %>%
                gsub(pattern = ",", replacement = "", fixed = TRUE) %>% as.integer
@@ -432,7 +436,7 @@ get_immodata2 <- function(city_vector) {
 #' @examples
 #' cities <- get_immodata(c("bussigny", "nyon"))
 #' predict_price(cities) # based on a dataframe
-#' predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
+#' predict_price(rooms = 3, m2 = 59, city = "nyon") # for an unique housing
 
 predict_price <- function(housings, rooms, m2, city, model = "rf", seed = 1) {
 
@@ -555,11 +559,11 @@ plot.pred <- function(pred_object) {
     shiny::fluidRow(
       shiny::column(width = 8,
                     shiny::plotOutput("plot1", height = 300,
-                        click = "plot1_click",
-                        brush = shiny::brushOpts(
-                          id = "plot1_brush"
-                        )
-             )
+                                      click = "plot1_click",
+                                      brush = shiny::brushOpts(
+                                        id = "plot1_brush"
+                                      )
+                    )
       )
     ),
     shiny::fluidRow(

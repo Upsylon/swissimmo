@@ -34,7 +34,7 @@ get_immodata or providing only rooms, m2 and city of a single housing
 \examples{
 cities <- get_immodata(c("bussigny", "nyon"))
 predict_price(cities) # based on a dataframe
-predict_price(city = "nyon", rooms = 3, m2= 59) # for an unique housing
+predict_price(rooms = 3, m2 = 59, city = "nyon") # for an unique housing
 }
 \author{
 Germano David
