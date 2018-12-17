@@ -651,7 +651,8 @@ my_theme <- function(base_size = 10, base_family = "sans") {
 
 
 #' @title Shiny app of the swiss real estate market
-#' @description This function enables to add a beautiful theme to ggplot graphs
+#' @description This function enables to have an interactive shiny app of the swiss
+#' housing renting market.
 #' @param all_cities A dataframe resulting from the get_immodata2 function,
 #' containing the different housings, their prices, rooms, m2, city, addresses,
 #' longitude, latitude and predicted_price.

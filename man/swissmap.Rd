@@ -12,7 +12,8 @@ containing the different housings, their prices, rooms, m2, city, addresses,
 longitude, latitude and predicted_price.}
 }
 \description{
-This function enables to add a beautiful theme to ggplot graphs
+This function enables to have an interactive shiny app of the swiss
+housing renting market.
 }
 \examples{
 my_cities <- get_immodata2("lausanne", "nyon", "geneve")
