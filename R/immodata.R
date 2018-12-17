@@ -200,7 +200,7 @@ get_immodata <- function(city_vector) {
 #' @title Websrcapping of Immoscout24.ch data by city adding coordinates and predicted
 #' price
 #' @description This function enables to collect the data about the location market
-#' from Immoscout24.ch. For given cities, on can retrieve the housings available
+#' from Immoscout24.ch. For given cities, one can retrieve the housings available
 #' for renting.
 #' It adds the coordinates of the addresses and the predicted price of a good.
 #' Note that this function requires an API code from Google and which is costly.
@@ -423,7 +423,7 @@ get_immodata2 <- function(city_vector) {
 #' @description This function enables to predict the prices of housings based on
 #' their number of rooms, size in square meters, city and using a particular model.
 #' The user can provide either a dataframe in the form of the ones outputted by the
-#' get_immodata or providing only rooms, m2 and city of a single housing
+#' get_immodata or providing only rooms, m2 and city of a single housing.
 #' @param housings A dataframe in the form of the ones outputted by the get_immodata
 #' function.
 #' @param rooms The number of rooms for a single housing estimation
