@@ -18,7 +18,7 @@ and containing missing data.
 }
 \description{
 This function enables to collect the data about the location market
-from Immoscout24.ch. For given cities, on can retrieve the housings available
+from Immoscout24.ch. For given cities, one can retrieve the housings available
 for renting.
 It adds the coordinates of the addresses and the predicted price of a good.
 Note that this function requires an API code from Google and which is costly.
