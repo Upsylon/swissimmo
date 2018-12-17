@@ -12,11 +12,7 @@ Author: Authors@R: c(
     person("Edgar", "Raisin", email = "Edgar.Raisin@unil.ch",
     role = "aut"))
 Maintainer: The package maintainer <patrik.grandadam@unil.ch>
-Description: This package is used to webscrap and analyse data from immoscout.24.
-It is constituted of multiple functions enabling to scrap the data from the website, 
-to predict the prices of the different housings based on their characteristics, and 
-to plot the different housings to be rent on a interactive map of Switzerland with 
-their respective characteristics. 
+Description: This package is used to webscrap and analyse data from immoscout.24. It is constituted of multiple functions enabling to scrap the data from the website, to predict the prices of the different housings based on their characteristics, and to plot the different housings to be rent on a interactive map of Switzerland with their respective characteristics. 
 License: MIT
 Encoding: UTF-8
 LazyData: true
