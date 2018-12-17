@@ -29,7 +29,7 @@ dataframe or the single housing
 This function enables to predict the prices of housings based on
 their number of rooms, size in square meters, city and using a particular model.
 The user can provide either a dataframe in the form of the ones outputted by the
-get_immodata or providing only rooms, m2 and city of a single housing
+get_immodata or providing only rooms, m2 and city of a single housing.
 }
 \examples{
 cities <- get_immodata(c("bussigny", "nyon"))
