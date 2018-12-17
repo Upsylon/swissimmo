@@ -413,7 +413,7 @@ get_immodata2 <- function(city_vector) {
   all_cities <- all_cities[complete.cases(all_cities),]
 
   all_cities <- all_cities %>%
-    mutate(predicted_price = summary(predict_price(all_cities))$predicted_price)
+    dplyr::mutate(predicted_price = summary(predict_price(all_cities))$predicted_price)
 
   return(all_cities)
 }
