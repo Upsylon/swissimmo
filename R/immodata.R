@@ -35,6 +35,10 @@ get_immodata <- function(city_vector) {
   ### Getting the number of pages for each cities
   pages <- list()
   for( i in 1:length(cities)){
+    if (xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
+                                          use.names = FALSE))) %>%
+        rvest::html_nodes(css = ".fsjvuy") %>% # the csv corresponding to pages
+        rvest::html_text() %>% as.numeric %>% length() != 0) {
     pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
                                                     use.names = FALSE))) %>%
       rvest::html_nodes(css = ".fsjvuy") %>% # the csv corresponding to pages
@@ -42,6 +46,7 @@ get_immodata <- function(city_vector) {
       as.numeric() %>%
       max(na.rm = TRUE) %>%
       seq(from = 1)
+    } else {pages[[i]] <- 1}
   }
 
   ### Scrapping everything
@@ -235,13 +240,18 @@ get_immodata2 <- function(city_vector) {
   ### Getting the number of pages for each cities
   pages <- list()
   for( i in 1:length(cities)){
-    pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
-                                                    use.names = FALSE))) %>%
-      rvest::html_nodes(css = ".fsjvuy") %>%
-      rvest::html_text() %>%
-      as.numeric() %>%
-      max(na.rm = TRUE) %>%
-      seq(from = 1)
+    if (xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
+                                          use.names = FALSE))) %>%
+        rvest::html_nodes(css = ".fsjvuy") %>% # the csv corresponding to pages
+        rvest::html_text() %>% as.numeric %>% length() != 0) {
+      pages[[i]] <- xml2::read_html(x = paste0(unlist(attributes(cities[[i]]),
+                                                      use.names = FALSE))) %>%
+        rvest::html_nodes(css = ".fsjvuy") %>% # the csv corresponding to pages
+        rvest::html_text() %>%
+        as.numeric() %>%
+        max(na.rm = TRUE) %>%
+        seq(from = 1)
+    } else {pages[[i]] <- 1}
   }
 
   ### Scrapping everything
