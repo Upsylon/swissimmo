@@ -60,7 +60,7 @@ get_immodata <- function(city_vector) {
 
       cities[[i]][[page]] <- list()
       cities[[i]][[page]] <- xml2::read_html(url_path_page_immoscout) %>%
-        rvest::html_nodes(".dTICXP") %>% # the csv corresponding to the big block
+        rvest::html_nodes(".dttIeR") %>% # the csv corresponding to the big block
         rvest::html_text()
     }
   }
