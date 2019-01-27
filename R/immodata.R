@@ -598,8 +598,8 @@ plot.pred <- function(pred_object) {
       ggplot2::ggplot(toplot, aes(price, predicted_price)) +
         ggplot2::geom_point() +
         ggplot2::geom_abline(slope = 1, intercept = 1, color = "red") +
-        ggplot2::xlab("Predicted values of the testing set") +
-        ggplot2::ylab("Real value of the testing set") +
+        ggplot2::xlab("Real of the testing set") +
+        ggplot2::ylab("Predicted values value of the testing set") +
         my_theme()
     })
 
